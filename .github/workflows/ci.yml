@@ -19,20 +19,15 @@ jobs:
         with:
           go-version-file: providers/setup-kubectl/go.mod
 
-      - name: Install tinx CLI
-        run: |
-          mkdir -p "$HOME/.local/bin"
-          env -u RPROMPT GOBIN="$HOME/.local/bin" go install github.com/sourceplane/tinx/cmd/tinx@v0.3.2
-          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
-
       - name: Run Go tests
         run: go test ./...
 
       - name: Validate release build
-        run: |
-          tinx release \
-            --manifest provider.yaml \
-            --main ./cmd/tinx-provider-kubectl \
-            --dist dist \
-            --output oci \
-            --tag ci
+        uses: sourceplane/tinx-release-action@v1
+        with:
+          working-directory: providers/setup-kubectl
+          manifest: provider.yaml
+          main: ./cmd/tinx-provider-kubectl
+          output: oci
+          dist: dist
+          tag: ci
