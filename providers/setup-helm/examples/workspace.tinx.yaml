@@ -1,0 +1,6 @@
+apiVersion: tinx.io/v1
+kind: Workspace
+workspace: demo
+providers:
+  helm:
+    source: sourceplane/tinx-setup-helm:v0.1.0

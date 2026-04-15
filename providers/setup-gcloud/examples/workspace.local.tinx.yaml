@@ -1,0 +1,6 @@
+apiVersion: tinx.io/v1
+kind: Workspace
+workspace: setup-gcloud-local
+providers:
+  gcloud:
+    source: ../oci

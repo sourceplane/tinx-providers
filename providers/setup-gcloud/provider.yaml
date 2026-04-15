@@ -1,0 +1,65 @@
+apiVersion: tinx.io/v1
+kind: Provider
+metadata:
+  namespace: sourceplane
+  name: tinx-setup-gcloud
+  version: v0.1.0
+  description: Lazily installs the Google Cloud CLI into the active Tinx workspace using a bundled Go runtime.
+spec:
+  bundles:
+    - name: setup-gcloud
+      layers:
+        - platform:
+            os: darwin
+            arch: amd64
+          mediaType: application/vnd.tinx.tool.binary
+          source: dist/bin/darwin/amd64/tinx-provider-gcloud
+        - platform:
+            os: darwin
+            arch: arm64
+          mediaType: application/vnd.tinx.tool.binary
+          source: dist/bin/darwin/arm64/tinx-provider-gcloud
+        - platform:
+            os: linux
+            arch: amd64
+          mediaType: application/vnd.tinx.tool.binary
+          source: dist/bin/linux/amd64/tinx-provider-gcloud
+        - platform:
+            os: linux
+            arch: arm64
+          mediaType: application/vnd.tinx.tool.binary
+          source: dist/bin/linux/arm64/tinx-provider-gcloud
+        - platform:
+            os: windows
+            arch: amd64
+          mediaType: application/vnd.tinx.tool.binary
+          source: dist/bin/windows/amd64/tinx-provider-gcloud.exe
+        - platform:
+            os: windows
+            arch: arm64
+          mediaType: application/vnd.tinx.tool.binary
+          source: dist/bin/windows/arm64/tinx-provider-gcloud.exe
+  environments:
+    - name: gcloud-env
+      variables:
+        GCLOUD_PROVIDER_REF: ${provider_ref}
+      export:
+        - GCLOUD_PROVIDER_REF
+  tools:
+    - name: setup-gcloud
+      runtime: oci
+      from: bundle.setup-gcloud
+      provides:
+        - setup-gcloud
+    - name: gcloud
+      default: true
+      runtime: local
+      install:
+        tool: setup-gcloud
+        path: bin/gcloud
+      dependsOn:
+        - tool: setup-gcloud
+      provides:
+        - gcloud
+      environments:
+        - gcloud-env

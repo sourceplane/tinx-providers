@@ -1,5 +1,11 @@
 go 1.23.0
 
 use (
+	.
+	./providers/setup-azure-cli
+	./providers/setup-gcloud
+	./providers/setup-helm
+	./providers/setup-kustomize
 	./providers/setup-kubectl
+	./providers/setup-terraform
 )

@@ -1,0 +1,65 @@
+apiVersion: tinx.io/v1
+kind: Provider
+metadata:
+  namespace: sourceplane
+  name: tinx-setup-terraform
+  version: v0.1.0
+  description: Lazily installs terraform into the active Tinx workspace using a bundled Go runtime.
+spec:
+  bundles:
+    - name: setup-terraform
+      layers:
+        - platform:
+            os: darwin
+            arch: amd64
+          mediaType: application/vnd.tinx.tool.binary
+          source: dist/bin/darwin/amd64/tinx-provider-terraform
+        - platform:
+            os: darwin
+            arch: arm64
+          mediaType: application/vnd.tinx.tool.binary
+          source: dist/bin/darwin/arm64/tinx-provider-terraform
+        - platform:
+            os: linux
+            arch: amd64
+          mediaType: application/vnd.tinx.tool.binary
+          source: dist/bin/linux/amd64/tinx-provider-terraform
+        - platform:
+            os: linux
+            arch: arm64
+          mediaType: application/vnd.tinx.tool.binary
+          source: dist/bin/linux/arm64/tinx-provider-terraform
+        - platform:
+            os: linux
+            arch: arm
+          mediaType: application/vnd.tinx.tool.binary
+          source: dist/bin/linux/arm/tinx-provider-terraform
+        - platform:
+            os: windows
+            arch: amd64
+          mediaType: application/vnd.tinx.tool.binary
+          source: dist/bin/windows/amd64/tinx-provider-terraform.exe
+  environments:
+    - name: terraform-env
+      variables:
+        TERRAFORM_PROVIDER_REF: ${provider_ref}
+      export:
+        - TERRAFORM_PROVIDER_REF
+  tools:
+    - name: setup-terraform
+      runtime: oci
+      from: bundle.setup-terraform
+      provides:
+        - setup-terraform
+    - name: terraform
+      default: true
+      runtime: local
+      install:
+        tool: setup-terraform
+        path: bin/terraform
+      dependsOn:
+        - tool: setup-terraform
+      provides:
+        - terraform
+      environments:
+        - terraform-env

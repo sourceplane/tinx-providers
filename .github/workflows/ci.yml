@@ -8,26 +8,70 @@ on:
 
 jobs:
   validate:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: providers/setup-kubectl
+    runs-on: ${{ matrix.runs_on }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - provider_dir: providers/setup-kubectl
+            runs_on: ubuntu-latest
+            provider_name: tinx-setup-kubectl
+            main: ./cmd/tinx-provider-kubectl
+            tool: kubectl
+            smoke_command: kubectl version --client -o json
+            kubectl_version: v1.30.6
+          - provider_dir: providers/setup-azure-cli
+            runs_on: macos-latest
+            provider_name: tinx-setup-azure-cli
+            main: ./cmd/tinx-provider-azure-cli
+            tool: az
+            smoke_command: az version --output json
+            azure_cli_version: 2.85.0
+          - provider_dir: providers/setup-helm
+            runs_on: ubuntu-latest
+            provider_name: tinx-setup-helm
+            main: ./cmd/tinx-provider-helm
+            tool: helm
+            smoke_command: helm version --template '{{ .Version }}'
+            helm_version: v4.1.4
+          - provider_dir: providers/setup-kustomize
+            runs_on: ubuntu-latest
+            provider_name: tinx-setup-kustomize
+            main: ./cmd/tinx-provider-kustomize
+            tool: kustomize
+            smoke_command: kustomize version
+            kustomize_version: v5.8.1
+          - provider_dir: providers/setup-terraform
+            runs_on: ubuntu-latest
+            provider_name: tinx-setup-terraform
+            main: ./cmd/tinx-provider-terraform
+            tool: terraform
+            smoke_command: terraform version -json
+            terraform_version: 1.14.8
+          - provider_dir: providers/setup-gcloud
+            runs_on: ubuntu-latest
+            provider_name: tinx-setup-gcloud
+            main: ./cmd/tinx-provider-gcloud
+            tool: gcloud
+            smoke_command: gcloud version --format=json
+            gcloud_version: 565.0.0
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-go@v5
         with:
-          go-version-file: providers/setup-kubectl/go.mod
+          go-version-file: go.work
 
       - name: Run Go tests
+        working-directory: ${{ matrix.provider_dir }}
         run: go test ./...
 
       - name: Validate release build
         uses: sourceplane/tinx-release-action@v2
         with:
-          working-directory: providers/setup-kubectl
+          working-directory: ${{ matrix.provider_dir }}
           manifest: provider.yaml
-          main: ./cmd/tinx-provider-kubectl
+          main: ${{ matrix.main }}
           output: oci
           dist: dist
           tag: ci
@@ -35,20 +79,28 @@ jobs:
       - name: Smoke test transient providers
         uses: sourceplane/tinx-action@v2
         env:
-          KUBECTL_VERSION: v1.30.6
+          KUBECTL_VERSION: ${{ matrix.kubectl_version }}
+          AZURE_CLI_VERSION: ${{ matrix.azure_cli_version }}
+          HELM_VERSION: ${{ matrix.helm_version }}
+          KUSTOMIZE_VERSION: ${{ matrix.kustomize_version }}
+          TERRAFORM_VERSION: ${{ matrix.terraform_version }}
+          GCLOUD_VERSION: ${{ matrix.gcloud_version }}
         with:
-          working-directory: providers/setup-kubectl
+          working-directory: ${{ matrix.provider_dir }}
           providers: |
-            ${{ github.workspace }}/providers/setup-kubectl/oci as kubectl
-          run: |
-            kubectl version --client -o json
+            ${{ github.workspace }}/${{ matrix.provider_dir }}/oci as ${{ matrix.tool }}
+          run: ${{ matrix.smoke_command }}
 
       - name: Smoke test workspace manifest
         uses: sourceplane/tinx-action@v2
         env:
-          KUBECTL_VERSION: v1.30.6
+          KUBECTL_VERSION: ${{ matrix.kubectl_version }}
+          AZURE_CLI_VERSION: ${{ matrix.azure_cli_version }}
+          HELM_VERSION: ${{ matrix.helm_version }}
+          KUSTOMIZE_VERSION: ${{ matrix.kustomize_version }}
+          TERRAFORM_VERSION: ${{ matrix.terraform_version }}
+          GCLOUD_VERSION: ${{ matrix.gcloud_version }}
         with:
-          working-directory: providers/setup-kubectl
+          working-directory: ${{ matrix.provider_dir }}
           workspace: examples/workspace.local.tinx.yaml
-          run: |
-            kubectl version --client -o json
+          run: ${{ matrix.smoke_command }}

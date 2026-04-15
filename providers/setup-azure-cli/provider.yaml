@@ -1,0 +1,61 @@
+apiVersion: tinx.io/v1
+kind: Provider
+metadata:
+  namespace: sourceplane
+  name: tinx-setup-azure-cli
+  version: v0.1.0
+  description: Lazily installs Azure CLI into the active Tinx workspace using a bundled Go runtime.
+spec:
+  bundles:
+    - name: setup-azure-cli
+      layers:
+        - platform:
+            os: darwin
+            arch: amd64
+          mediaType: application/vnd.tinx.tool.binary
+          source: dist/bin/darwin/amd64/tinx-provider-azure-cli
+        - platform:
+            os: darwin
+            arch: arm64
+          mediaType: application/vnd.tinx.tool.binary
+          source: dist/bin/darwin/arm64/tinx-provider-azure-cli
+        - platform:
+            os: windows
+            arch: amd64
+          mediaType: application/vnd.tinx.tool.binary
+          source: dist/bin/windows/amd64/tinx-provider-azure-cli.exe
+  environments:
+    - name: azure-cli-env
+      variables:
+        AZURE_CLI_PROVIDER_REF: ${provider_ref}
+      export:
+        - AZURE_CLI_PROVIDER_REF
+  tools:
+    - name: setup-azure-cli
+      runtime: oci
+      from: bundle.setup-azure-cli
+      provides:
+        - setup-azure-cli
+    - name: az
+      default: true
+      runtime: local
+      install:
+        tool: setup-azure-cli
+        path: bin/az
+      dependsOn:
+        - tool: setup-azure-cli
+      provides:
+        - az
+      environments:
+        - azure-cli-env
+    - name: azure-cli
+      runtime: local
+      install:
+        tool: setup-azure-cli
+        path: bin/az
+      dependsOn:
+        - tool: setup-azure-cli
+      provides:
+        - azure-cli
+      environments:
+        - azure-cli-env

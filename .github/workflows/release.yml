@@ -1,15 +1,19 @@
-name: Release setup-kubectl
+name: Release provider
 
 on:
   workflow_dispatch:
     inputs:
+      provider_dir:
+        description: Provider directory under providers/
+        required: true
+        default: providers/setup-kubectl
       tag:
         description: Semantic version tag to package
         required: true
         default: v0.1.0
   push:
     tags:
-      - providers/setup-kubectl/v*
+      - providers/*/v*
 
 permissions:
   contents: read
@@ -18,24 +22,34 @@ permissions:
 jobs:
   release:
     runs-on: ubuntu-latest
-    env:
-      PROVIDER_DIR: providers/setup-kubectl
-      PROVIDER_NAME: tinx-setup-kubectl
     steps:
       - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.work
 
       - id: meta
         name: Resolve release metadata
         run: |
           if [[ "${GITHUB_EVENT_NAME}" == "workflow_dispatch" ]]; then
+            provider_dir="${{ inputs.provider_dir }}"
             tag="${{ inputs.tag }}"
           else
+            provider_dir="${GITHUB_REF_NAME%/v*}"
             tag="${GITHUB_REF_NAME##*/}"
           fi
 
+          provider_slug="${provider_dir#providers/}"
+          tool_name="${provider_slug#setup-}"
+          provider_name="tinx-${provider_slug}"
+          main="./cmd/tinx-provider-${tool_name}"
           owner=$(printf '%s' "$GITHUB_REPOSITORY_OWNER" | tr '[:upper:]' '[:lower:]')
-          push_ref="ghcr.io/${owner}/${PROVIDER_NAME}:${tag}"
+          push_ref="ghcr.io/${owner}/${provider_name}:${tag}"
 
+          echo "provider_dir=$provider_dir" >> "$GITHUB_OUTPUT"
+          echo "provider_name=$provider_name" >> "$GITHUB_OUTPUT"
+          echo "main=$main" >> "$GITHUB_OUTPUT"
           echo "tag=$tag" >> "$GITHUB_OUTPUT"
           echo "push_ref=$push_ref" >> "$GITHUB_OUTPUT"
 
@@ -49,9 +63,9 @@ jobs:
       - name: Release provider
         uses: sourceplane/tinx-release-action@v2
         with:
-          working-directory: ${{ env.PROVIDER_DIR }}
+          working-directory: ${{ steps.meta.outputs.provider_dir }}
           manifest: provider.yaml
-          main: ./cmd/tinx-provider-kubectl
+          main: ${{ steps.meta.outputs.main }}
           output: oci
           dist: dist
           tag: ${{ steps.meta.outputs.tag }}

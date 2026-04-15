@@ -47,7 +47,7 @@ providers:
     source: ghcr.io/sourceplane/tinx-setup-kubectl:v0.1.0
 EOF
 
-tinx init demo
+tinx init demo/tinx.yaml
 KUBECTL_VERSION=v1.30.6 tinx -w demo exec -- kubectl version --client -o json
 ```
 
@@ -64,7 +64,7 @@ providers:
     source: $(pwd)/oci
 EOF
 
-tinx init "$workspace_dir"
+tinx init "$workspace_dir/tinx.yaml"
 KUBECTL_VERSION=v1.30.6 tinx -w "$workspace_dir" exec -- kubectl version --client -o json
 ```
 

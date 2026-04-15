@@ -1,0 +1,70 @@
+apiVersion: tinx.io/v1
+kind: Provider
+metadata:
+  namespace: sourceplane
+  name: tinx-setup-helm
+  version: v0.1.0
+  description: Lazily installs Helm into the active Tinx workspace using a bundled Go runtime.
+spec:
+  bundles:
+    - name: setup-helm
+      layers:
+        - platform:
+            os: darwin
+            arch: amd64
+          mediaType: application/vnd.tinx.tool.binary
+          source: dist/bin/darwin/amd64/tinx-provider-helm
+        - platform:
+            os: darwin
+            arch: arm64
+          mediaType: application/vnd.tinx.tool.binary
+          source: dist/bin/darwin/arm64/tinx-provider-helm
+        - platform:
+            os: linux
+            arch: amd64
+          mediaType: application/vnd.tinx.tool.binary
+          source: dist/bin/linux/amd64/tinx-provider-helm
+        - platform:
+            os: linux
+            arch: arm64
+          mediaType: application/vnd.tinx.tool.binary
+          source: dist/bin/linux/arm64/tinx-provider-helm
+        - platform:
+            os: linux
+            arch: arm
+          mediaType: application/vnd.tinx.tool.binary
+          source: dist/bin/linux/arm/tinx-provider-helm
+        - platform:
+            os: windows
+            arch: amd64
+          mediaType: application/vnd.tinx.tool.binary
+          source: dist/bin/windows/amd64/tinx-provider-helm.exe
+        - platform:
+            os: windows
+            arch: arm64
+          mediaType: application/vnd.tinx.tool.binary
+          source: dist/bin/windows/arm64/tinx-provider-helm.exe
+  environments:
+    - name: helm-env
+      variables:
+        HELM_PROVIDER_REF: ${provider_ref}
+      export:
+        - HELM_PROVIDER_REF
+  tools:
+    - name: setup-helm
+      runtime: oci
+      from: bundle.setup-helm
+      provides:
+        - setup-helm
+    - name: helm
+      default: true
+      runtime: local
+      install:
+        tool: setup-helm
+        path: bin/helm
+      dependsOn:
+        - tool: setup-helm
+      provides:
+        - helm
+      environments:
+        - helm-env
