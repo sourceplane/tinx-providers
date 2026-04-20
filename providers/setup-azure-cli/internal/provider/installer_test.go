@@ -18,7 +18,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/sourceplane/tinx-providers/internal/installutil"
+	"github.com/sourceplane/kiox-providers/internal/installutil"
 )
 
 func TestResolveReleaseAsset(t *testing.T) {

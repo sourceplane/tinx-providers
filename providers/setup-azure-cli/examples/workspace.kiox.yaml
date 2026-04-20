@@ -1,0 +1,6 @@
+apiVersion: kiox.io/v1
+kind: Workspace
+workspace: demo
+providers:
+  az:
+    source: sourceplane/kiox-setup-azure-cli:v0.1.0

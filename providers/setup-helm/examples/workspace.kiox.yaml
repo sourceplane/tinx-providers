@@ -1,0 +1,6 @@
+apiVersion: kiox.io/v1
+kind: Workspace
+workspace: demo
+providers:
+  helm:
+    source: sourceplane/kiox-setup-helm:v0.1.0

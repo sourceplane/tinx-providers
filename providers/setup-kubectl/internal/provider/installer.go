@@ -39,7 +39,7 @@ type Config struct {
 	InstallDir       string
 	TargetBin        string
 	CacheDir         string
-	TinxHome         string
+	KioxHome         string
 	ToolName         string
 	Mirrors          []string
 	Debug            bool
@@ -99,7 +99,7 @@ func (i *Installer) Install(ctx context.Context, cfg Config) (Result, error) {
 		return Result{}, err
 	}
 
-	cacheDir, err := resolveCacheDir(cfg.CacheDir, cfg.TinxHome)
+	cacheDir, err := resolveCacheDir(cfg.CacheDir, cfg.KioxHome)
 	if err != nil {
 		return Result{}, err
 	}
@@ -240,7 +240,7 @@ func resolveTargetPath(targetBin, installDir, toolName, goos string) (string, er
 	}
 
 	if strings.TrimSpace(installDir) == "" {
-		return "", errors.New("TINX_TARGET_TOOL_INSTALL_DIR or TINX_TARGET_TOOL_BIN must be set")
+		return "", errors.New("KIOX_TARGET_TOOL_INSTALL_DIR or KIOX_TARGET_TOOL_BIN must be set")
 	}
 
 	name := strings.TrimSpace(toolName)
@@ -254,18 +254,18 @@ func resolveTargetPath(targetBin, installDir, toolName, goos string) (string, er
 	return filepath.Join(installDir, "bin", name), nil
 }
 
-func resolveCacheDir(cacheDir, tinxHome string) (string, error) {
+func resolveCacheDir(cacheDir, kioxHome string) (string, error) {
 	if trimmed := strings.TrimSpace(cacheDir); trimmed != "" {
 		return trimmed, nil
 	}
 
-	base := strings.TrimSpace(tinxHome)
+	base := strings.TrimSpace(kioxHome)
 	if base == "" {
 		homeDir, err := os.UserHomeDir()
 		if err != nil {
 			return "", fmt.Errorf("resolve home directory: %w", err)
 		}
-		base = filepath.Join(homeDir, ".tinx")
+		base = filepath.Join(homeDir, ".kiox")
 	}
 
 	return filepath.Join(base, "cache", "providers", "setup-kubectl"), nil

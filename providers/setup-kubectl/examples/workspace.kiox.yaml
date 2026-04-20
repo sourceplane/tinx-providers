@@ -1,0 +1,6 @@
+apiVersion: kiox.io/v1
+kind: Workspace
+workspace: demo
+providers:
+  kubectl:
+    source: sourceplane/kiox-setup-kubectl:v0.1.0

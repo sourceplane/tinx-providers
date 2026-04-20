@@ -3,20 +3,20 @@ gpt54m "
 You are a senior platform engineer building CNCF-grade tooling.
 
 Goal:
-Create a production-ready Tinx provider that replicates the behavior of a GitHub Action setup tool but follows Tinx architecture (provider + runtime + workspace separation).
+Create a production-ready Kiox provider that replicates the behavior of a GitHub Action setup tool but follows Kiox architecture (provider + runtime + workspace separation).
 
 ---
 
 ## 📌 Context
 
-Tinx Docs:
-https://docs.tinx.sourceplane.ai
+Kiox Docs:
+https://docs.kiox.sourceplane.ai
 
 Reference GHA Action:
 {{GHA_REPO_URL}}
 
 Provider Name:
-{{TINX_PROVIDER_NAME}}
+{{KIOX_PROVIDER_NAME}}
 
 Target Tool:
 {{TOOL_NAME}}
@@ -35,7 +35,7 @@ Go (preferred for portability and static binaries)
    - Download/install strategy
    - Platform differences (linux/mac/windows)
 
-2. Map this into Tinx concepts:
+2. Map this into Kiox concepts:
    - Provider schema (inputs/outputs)
    - Runtime execution model
    - Workspace mutation (files, binaries, env)
@@ -53,11 +53,11 @@ Go (preferred for portability and static binaries)
 Implement:
 
 1. CLI entrypoint:
-   - tinx-provider-{{TOOL_NAME}}
+   - kiox-provider-{{TOOL_NAME}}
 
 2. Features:
    - Download tool binary securely (HTTPS + checksum validation)
-   - Extract/install to workspace (.tinx/tools/{{tool}})
+   - Extract/install to workspace (.kiox/tools/{{tool}})
    - Add to PATH for workspace runtime
    - Support version pinning
 
@@ -72,18 +72,18 @@ Implement:
 
 ---
 
-## 📦 Phase 3 — Tinx Integration
+## 📦 Phase 3 — Kiox Integration
 
 1. Create provider.yaml:
-   - name: {{TINX_PROVIDER_NAME}}
+   - name: {{KIOX_PROVIDER_NAME}}
    - inputs:
      - version
    - outputs:
      - binary_path
 
 2. Ensure compatibility with:
-   - tinx workspace
-   - tinx runtime execution
+   - kiox workspace
+   - kiox runtime execution
 
 3. Follow k8s-style declarative schema (CRD-like)
 
@@ -91,13 +91,13 @@ Implement:
 
 ## 🧪 Phase 4 — Local Testing
 
-1. Install tinx locally:
-   curl -fsSL https://raw.githubusercontent.com/sourceplane/tinx/main/install.sh | bash
+1. Install kiox locally:
+   curl -fsSL https://raw.githubusercontent.com/sourceplane/kiox/main/install.sh | bash
 
 2. Create test workspace
 
 3. Run:
-   tinx apply -f provider.yaml
+   kiox apply -f provider.yaml
 
 4. Validate:
    - binary exists
@@ -120,7 +120,7 @@ Implement:
 
 ## 🚀 Phase 6 — Enhancements
 
-- Add caching layer (~/.tinx/cache)
+- Add caching layer (~/.kiox/cache)
 - Add semantic version resolution
 - Add fallback mirrors (GitHub releases, official mirrors)
 - Add logging + debug mode

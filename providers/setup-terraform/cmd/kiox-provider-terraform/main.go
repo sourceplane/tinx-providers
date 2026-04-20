@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/sourceplane/tinx-providers/providers/setup-terraform/internal/provider"
+	"github.com/sourceplane/kiox-providers/providers/setup-terraform/internal/provider"
 )
 
 func main() {
@@ -20,12 +20,12 @@ func main() {
 
 	fs := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
 	fs.StringVar(&config.RequestedVersion, "version", firstNonEmpty(os.Getenv("INPUT_VERSION"), os.Getenv("TERRAFORM_VERSION")), "terraform version to install")
-	fs.StringVar(&config.InstallDir, "install-dir", os.Getenv("TINX_TARGET_TOOL_INSTALL_DIR"), "override the target installation directory")
-	fs.StringVar(&config.TargetBin, "bin", os.Getenv("TINX_TARGET_TOOL_BIN"), "override the target binary path")
+	fs.StringVar(&config.InstallDir, "install-dir", os.Getenv("KIOX_TARGET_TOOL_INSTALL_DIR"), "override the target installation directory")
+	fs.StringVar(&config.TargetBin, "bin", os.Getenv("KIOX_TARGET_TOOL_BIN"), "override the target binary path")
 	fs.StringVar(&config.CacheDir, "cache-dir", os.Getenv("TERRAFORM_CACHE_DIR"), "override the provider cache directory")
-	fs.StringVar(&config.TinxHome, "tinx-home", os.Getenv("TINX_HOME"), "override the tinx home used to derive the cache")
-	fs.StringVar(&config.ToolName, "tool-name", firstNonEmpty(os.Getenv("TINX_TARGET_TOOL_NAME"), "terraform"), "tool name to materialize")
-	fs.StringVar(&outputFormat, "output", firstNonEmpty(os.Getenv("TINX_PROVIDER_OUTPUT"), "text"), "output format: text or json")
+	fs.StringVar(&config.KioxHome, "kiox-home", os.Getenv("KIOX_HOME"), "override the kiox home used to derive the cache")
+	fs.StringVar(&config.ToolName, "tool-name", firstNonEmpty(os.Getenv("KIOX_TARGET_TOOL_NAME"), "terraform"), "tool name to materialize")
+	fs.StringVar(&outputFormat, "output", firstNonEmpty(os.Getenv("KIOX_PROVIDER_OUTPUT"), "text"), "output format: text or json")
 	fs.Var(&downloadMirrors, "mirror", "additional HTTPS Terraform download base URL")
 	fs.Var(&indexURLs, "index-url", "additional HTTPS Terraform release index URL")
 	_ = fs.Parse(os.Args[1:])

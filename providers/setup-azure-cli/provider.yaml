@@ -1,10 +1,10 @@
-apiVersion: tinx.io/v1
+apiVersion: kiox.io/v1
 kind: Provider
 metadata:
   namespace: sourceplane
-  name: tinx-setup-azure-cli
+  name: kiox-setup-azure-cli
   version: v0.1.0
-  description: Lazily installs Azure CLI into the active Tinx workspace using a bundled Go runtime.
+  description: Lazily installs Azure CLI into the active Kiox workspace using a bundled Go runtime.
 spec:
   bundles:
     - name: setup-azure-cli
@@ -12,18 +12,18 @@ spec:
         - platform:
             os: darwin
             arch: amd64
-          mediaType: application/vnd.tinx.tool.binary
-          source: dist/bin/darwin/amd64/tinx-provider-azure-cli
+          mediaType: application/vnd.kiox.tool.binary
+          source: dist/bin/darwin/amd64/kiox-provider-azure-cli
         - platform:
             os: darwin
             arch: arm64
-          mediaType: application/vnd.tinx.tool.binary
-          source: dist/bin/darwin/arm64/tinx-provider-azure-cli
+          mediaType: application/vnd.kiox.tool.binary
+          source: dist/bin/darwin/arm64/kiox-provider-azure-cli
         - platform:
             os: windows
             arch: amd64
-          mediaType: application/vnd.tinx.tool.binary
-          source: dist/bin/windows/amd64/tinx-provider-azure-cli.exe
+          mediaType: application/vnd.kiox.tool.binary
+          source: dist/bin/windows/amd64/kiox-provider-azure-cli.exe
   environments:
     - name: azure-cli-env
       variables:
