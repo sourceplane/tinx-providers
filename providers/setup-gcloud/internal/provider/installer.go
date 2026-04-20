@@ -13,7 +13,7 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/sourceplane/tinx-providers/internal/installutil"
+	"github.com/sourceplane/kiox-providers/internal/installutil"
 )
 
 const (
@@ -24,7 +24,7 @@ const (
 	defaultMetadataBaseURL  = "https://storage.googleapis.com/storage/v1/b/cloud-sdk-release/o"
 	defaultComponentsURL    = "https://dl.google.com/dl/cloudsdk/channels/rapid/components-2.json"
 	installedSDKDirName     = "google-cloud-sdk"
-	installedVersionFile    = ".tinx-gcloud-version"
+	installedVersionFile    = ".kiox-gcloud-version"
 )
 
 var versionPattern = regexp.MustCompile(`^v?(\d+)\.(\d+)\.(\d+)$`)
@@ -34,7 +34,7 @@ type Config struct {
 	InstallDir       string
 	TargetBin        string
 	CacheDir         string
-	TinxHome         string
+	KioxHome         string
 	ToolName         string
 	DownloadMirrors  []string
 	MetadataBaseURLs []string
@@ -101,7 +101,7 @@ func (i *Installer) Install(ctx context.Context, cfg Config) (Result, error) {
 		return Result{}, err
 	}
 
-	cacheDir, err := installutil.ResolveCacheDir(cfg.CacheDir, cfg.TinxHome, "setup-gcloud")
+	cacheDir, err := installutil.ResolveCacheDir(cfg.CacheDir, cfg.KioxHome, "setup-gcloud")
 	if err != nil {
 		return Result{}, err
 	}
@@ -262,7 +262,7 @@ func resolveInstallPaths(installDir, targetBin, wrapperName string) (string, str
 	trimmedInstallDir := strings.TrimSpace(installDir)
 	trimmedTargetBin := strings.TrimSpace(targetBin)
 	if trimmedInstallDir == "" && trimmedTargetBin == "" {
-		return "", "", fmt.Errorf("TINX_TARGET_TOOL_INSTALL_DIR or TINX_TARGET_TOOL_BIN must be set")
+		return "", "", fmt.Errorf("KIOX_TARGET_TOOL_INSTALL_DIR or KIOX_TARGET_TOOL_BIN must be set")
 	}
 
 	if trimmedTargetBin != "" {

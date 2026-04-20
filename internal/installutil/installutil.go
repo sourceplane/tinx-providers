@@ -35,25 +35,25 @@ func ResolveTargetPath(targetBin, installDir, toolName, goos string) (string, er
 	}
 
 	if strings.TrimSpace(installDir) == "" {
-		return "", errors.New("TINX_TARGET_TOOL_INSTALL_DIR or TINX_TARGET_TOOL_BIN must be set")
+		return "", errors.New("KIOX_TARGET_TOOL_INSTALL_DIR or KIOX_TARGET_TOOL_BIN must be set")
 	}
 
 	targetPath := filepath.Join(strings.TrimSpace(installDir), "bin", ExecutableName(toolName, goos))
 	return filepath.Abs(targetPath)
 }
 
-func ResolveCacheDir(explicitCacheDir, tinxHome string, segments ...string) (string, error) {
+func ResolveCacheDir(explicitCacheDir, kioxHome string, segments ...string) (string, error) {
 	if trimmed := strings.TrimSpace(explicitCacheDir); trimmed != "" {
 		return filepath.Abs(trimmed)
 	}
 
-	base := strings.TrimSpace(tinxHome)
+	base := strings.TrimSpace(kioxHome)
 	if base == "" {
 		homeDir, err := os.UserHomeDir()
 		if err != nil {
 			return "", fmt.Errorf("resolve home directory: %w", err)
 		}
-		base = filepath.Join(homeDir, ".tinx")
+		base = filepath.Join(homeDir, ".kiox")
 	}
 
 	parts := append([]string{base, "cache", "providers"}, segments...)

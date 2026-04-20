@@ -1,0 +1,7 @@
+apiVersion: kiox.io/v1
+kind: Workspace
+metadata:
+  name: setup-kubectl-local
+providers:
+  kubectl:
+    source: ../oci

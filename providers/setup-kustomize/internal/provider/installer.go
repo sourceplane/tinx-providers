@@ -12,7 +12,7 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/sourceplane/tinx-providers/internal/installutil"
+	"github.com/sourceplane/kiox-providers/internal/installutil"
 )
 
 const (
@@ -31,7 +31,7 @@ type Config struct {
 	InstallDir       string
 	TargetBin        string
 	CacheDir         string
-	TinxHome         string
+	KioxHome         string
 	ToolName         string
 	DownloadMirrors  []string
 	ReleaseAPIURLs   []string
@@ -88,7 +88,7 @@ func (i *Installer) Install(ctx context.Context, cfg Config) (Result, error) {
 		return Result{}, err
 	}
 
-	cacheDir, err := installutil.ResolveCacheDir(cfg.CacheDir, cfg.TinxHome, "setup-kustomize")
+	cacheDir, err := installutil.ResolveCacheDir(cfg.CacheDir, cfg.KioxHome, "setup-kustomize")
 	if err != nil {
 		return Result{}, err
 	}

@@ -1,10 +1,10 @@
-apiVersion: tinx.io/v1
+apiVersion: kiox.io/v1
 kind: Provider
 metadata:
   namespace: sourceplane
-  name: tinx-setup-terraform
-  version: v0.1.0
-  description: Lazily installs terraform into the active Tinx workspace using a bundled Go runtime.
+  name: setup-terraform
+  version: v0.2.0
+  description: Lazily installs Terraform into kiox workspaces using a bundled Go installer.
 spec:
   bundles:
     - name: setup-terraform
@@ -12,33 +12,33 @@ spec:
         - platform:
             os: darwin
             arch: amd64
-          mediaType: application/vnd.tinx.tool.binary
-          source: dist/bin/darwin/amd64/tinx-provider-terraform
+          mediaType: application/vnd.kiox.tool.binary
+          source: dist/bin/darwin/amd64/kiox-provider-terraform
         - platform:
             os: darwin
             arch: arm64
-          mediaType: application/vnd.tinx.tool.binary
-          source: dist/bin/darwin/arm64/tinx-provider-terraform
+          mediaType: application/vnd.kiox.tool.binary
+          source: dist/bin/darwin/arm64/kiox-provider-terraform
         - platform:
             os: linux
             arch: amd64
-          mediaType: application/vnd.tinx.tool.binary
-          source: dist/bin/linux/amd64/tinx-provider-terraform
+          mediaType: application/vnd.kiox.tool.binary
+          source: dist/bin/linux/amd64/kiox-provider-terraform
         - platform:
             os: linux
             arch: arm64
-          mediaType: application/vnd.tinx.tool.binary
-          source: dist/bin/linux/arm64/tinx-provider-terraform
+          mediaType: application/vnd.kiox.tool.binary
+          source: dist/bin/linux/arm64/kiox-provider-terraform
         - platform:
             os: linux
             arch: arm
-          mediaType: application/vnd.tinx.tool.binary
-          source: dist/bin/linux/arm/tinx-provider-terraform
+          mediaType: application/vnd.kiox.tool.binary
+          source: dist/bin/linux/arm/kiox-provider-terraform
         - platform:
             os: windows
             arch: amd64
-          mediaType: application/vnd.tinx.tool.binary
-          source: dist/bin/windows/amd64/tinx-provider-terraform.exe
+          mediaType: application/vnd.kiox.tool.binary
+          source: dist/bin/windows/amd64/kiox-provider-terraform.exe
   environments:
     - name: terraform-env
       variables:

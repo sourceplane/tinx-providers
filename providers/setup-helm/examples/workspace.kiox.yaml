@@ -1,0 +1,7 @@
+apiVersion: kiox.io/v1
+kind: Workspace
+metadata:
+  name: demo
+providers:
+  helm:
+    source: ghcr.io/sourceplane/setup-helm:v0.2.0

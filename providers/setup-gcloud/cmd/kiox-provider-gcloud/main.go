@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/sourceplane/tinx-providers/providers/setup-gcloud/internal/provider"
+	"github.com/sourceplane/kiox-providers/providers/setup-gcloud/internal/provider"
 )
 
 func main() {
@@ -21,12 +21,12 @@ func main() {
 
 	fs := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
 	fs.StringVar(&config.RequestedVersion, "version", firstNonEmpty(os.Getenv("INPUT_VERSION"), os.Getenv("GCLOUD_VERSION"), os.Getenv("CLOUDSDK_VERSION")), "gcloud version to install")
-	fs.StringVar(&config.InstallDir, "install-dir", os.Getenv("TINX_TARGET_TOOL_INSTALL_DIR"), "override the target installation directory")
-	fs.StringVar(&config.TargetBin, "bin", os.Getenv("TINX_TARGET_TOOL_BIN"), "override the target binary path")
+	fs.StringVar(&config.InstallDir, "install-dir", firstNonEmpty(os.Getenv("KIOX_TARGET_TOOL_INSTALL_DIR"), os.Getenv("TINX_TARGET_TOOL_INSTALL_DIR")), "override the target installation directory")
+	fs.StringVar(&config.TargetBin, "bin", firstNonEmpty(os.Getenv("KIOX_TARGET_TOOL_BIN"), os.Getenv("TINX_TARGET_TOOL_BIN")), "override the target binary path")
 	fs.StringVar(&config.CacheDir, "cache-dir", os.Getenv("GCLOUD_CACHE_DIR"), "override the provider cache directory")
-	fs.StringVar(&config.TinxHome, "tinx-home", os.Getenv("TINX_HOME"), "override the tinx home used to derive the cache")
-	fs.StringVar(&config.ToolName, "tool-name", firstNonEmpty(os.Getenv("TINX_TARGET_TOOL_NAME"), "gcloud"), "tool name to materialize")
-	fs.StringVar(&outputFormat, "output", firstNonEmpty(os.Getenv("TINX_PROVIDER_OUTPUT"), "text"), "output format: text or json")
+	fs.StringVar(&config.KioxHome, "kiox-home", firstNonEmpty(os.Getenv("KIOX_HOME"), os.Getenv("TINX_HOME")), "override the kiox home used to derive the cache")
+	fs.StringVar(&config.ToolName, "tool-name", firstNonEmpty(os.Getenv("KIOX_TARGET_TOOL_NAME"), os.Getenv("TINX_TARGET_TOOL_NAME"), "gcloud"), "tool name to materialize")
+	fs.StringVar(&outputFormat, "output", firstNonEmpty(os.Getenv("KIOX_PROVIDER_OUTPUT"), os.Getenv("TINX_PROVIDER_OUTPUT"), "text"), "output format: text or json")
 	fs.Var(&downloadMirrors, "mirror", "additional HTTPS gcloud archive base URL")
 	fs.Var(&metadataBaseURLs, "metadata-url", "additional HTTPS Cloud Storage metadata base URL")
 	fs.Var(&componentsURLs, "components-url", "additional HTTPS gcloud components manifest URL")

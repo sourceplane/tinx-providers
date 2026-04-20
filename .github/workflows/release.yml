@@ -10,7 +10,7 @@ on:
       tag:
         description: Semantic version tag to package
         required: true
-        default: v0.1.0
+        default: v0.2.0
   push:
     tags:
       - providers/*/v*
@@ -42,8 +42,8 @@ jobs:
 
           provider_slug="${provider_dir#providers/}"
           tool_name="${provider_slug#setup-}"
-          provider_name="tinx-${provider_slug}"
-          main="./cmd/tinx-provider-${tool_name}"
+          provider_name="${provider_slug}"
+          main="./cmd/kiox-provider-${tool_name}"
           owner=$(printf '%s' "$GITHUB_REPOSITORY_OWNER" | tr '[:upper:]' '[:lower:]')
           push_ref="ghcr.io/${owner}/${provider_name}:${tag}"
 
@@ -61,7 +61,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Release provider
-        uses: sourceplane/tinx-release-action@v2
+        uses: sourceplane/kiox-release-action@v1
         with:
           working-directory: ${{ steps.meta.outputs.provider_dir }}
           manifest: provider.yaml

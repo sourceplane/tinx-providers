@@ -15,43 +15,43 @@ jobs:
         include:
           - provider_dir: providers/setup-kubectl
             runs_on: ubuntu-latest
-            provider_name: tinx-setup-kubectl
-            main: ./cmd/tinx-provider-kubectl
+            provider_name: setup-kubectl
+            main: ./cmd/kiox-provider-kubectl
             tool: kubectl
             smoke_command: kubectl version --client -o json
             kubectl_version: v1.30.6
           - provider_dir: providers/setup-azure-cli
             runs_on: macos-latest
-            provider_name: tinx-setup-azure-cli
-            main: ./cmd/tinx-provider-azure-cli
+            provider_name: setup-azure-cli
+            main: ./cmd/kiox-provider-azure-cli
             tool: az
             smoke_command: az version --output json
             azure_cli_version: 2.85.0
           - provider_dir: providers/setup-helm
             runs_on: ubuntu-latest
-            provider_name: tinx-setup-helm
-            main: ./cmd/tinx-provider-helm
+            provider_name: setup-helm
+            main: ./cmd/kiox-provider-helm
             tool: helm
             smoke_command: helm version --template '{{ .Version }}'
             helm_version: v4.1.4
           - provider_dir: providers/setup-kustomize
             runs_on: ubuntu-latest
-            provider_name: tinx-setup-kustomize
-            main: ./cmd/tinx-provider-kustomize
+            provider_name: setup-kustomize
+            main: ./cmd/kiox-provider-kustomize
             tool: kustomize
             smoke_command: kustomize version
             kustomize_version: v5.8.1
           - provider_dir: providers/setup-terraform
             runs_on: ubuntu-latest
-            provider_name: tinx-setup-terraform
-            main: ./cmd/tinx-provider-terraform
+            provider_name: setup-terraform
+            main: ./cmd/kiox-provider-terraform
             tool: terraform
             smoke_command: terraform version -json
             terraform_version: 1.14.8
           - provider_dir: providers/setup-gcloud
             runs_on: ubuntu-latest
-            provider_name: tinx-setup-gcloud
-            main: ./cmd/tinx-provider-gcloud
+            provider_name: setup-gcloud
+            main: ./cmd/kiox-provider-gcloud
             tool: gcloud
             smoke_command: gcloud version --format=json
             gcloud_version: 565.0.0
@@ -67,7 +67,7 @@ jobs:
         run: go test ./...
 
       - name: Validate release build
-        uses: sourceplane/tinx-release-action@v2
+        uses: sourceplane/kiox-release-action@v1
         with:
           working-directory: ${{ matrix.provider_dir }}
           manifest: provider.yaml
@@ -77,7 +77,7 @@ jobs:
           tag: ci
 
       - name: Smoke test transient providers
-        uses: sourceplane/tinx-action@v2
+        uses: sourceplane/kiox-action@v2
         env:
           KUBECTL_VERSION: ${{ matrix.kubectl_version }}
           AZURE_CLI_VERSION: ${{ matrix.azure_cli_version }}
@@ -89,10 +89,13 @@ jobs:
           working-directory: ${{ matrix.provider_dir }}
           providers: |
             ${{ github.workspace }}/${{ matrix.provider_dir }}/oci as ${{ matrix.tool }}
-          run: ${{ matrix.smoke_command }}
+          run: |
+            kiox --workspace "$KIOX_WORKSPACE_ROOT" ls
+            kiox --workspace "$KIOX_WORKSPACE_ROOT" status
+            ${{ matrix.smoke_command }}
 
       - name: Smoke test workspace manifest
-        uses: sourceplane/tinx-action@v2
+        uses: sourceplane/kiox-action@v2
         env:
           KUBECTL_VERSION: ${{ matrix.kubectl_version }}
           AZURE_CLI_VERSION: ${{ matrix.azure_cli_version }}
@@ -102,5 +105,8 @@ jobs:
           GCLOUD_VERSION: ${{ matrix.gcloud_version }}
         with:
           working-directory: ${{ matrix.provider_dir }}
-          workspace: examples/workspace.local.tinx.yaml
-          run: ${{ matrix.smoke_command }}
+          workspace: examples/workspace.local.kiox.yaml
+          run: |
+            kiox --workspace "$KIOX_WORKSPACE_ROOT" ls
+            kiox --workspace "$KIOX_WORKSPACE_ROOT" status
+            ${{ matrix.smoke_command }}

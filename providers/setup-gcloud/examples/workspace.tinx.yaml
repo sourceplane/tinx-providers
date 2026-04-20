@@ -1,6 +1,0 @@
-apiVersion: tinx.io/v1
-kind: Workspace
-workspace: demo
-providers:
-  gcloud:
-    source: sourceplane/tinx-setup-gcloud:v0.1.0

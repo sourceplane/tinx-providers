@@ -1,0 +1,7 @@
+apiVersion: kiox.io/v1
+kind: Workspace
+metadata:
+  name: demo
+providers:
+  az:
+    source: ghcr.io/sourceplane/setup-azure-cli:v0.2.0

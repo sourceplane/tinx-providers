@@ -1,79 +1,97 @@
 # setup-kustomize
 
-Tinx provider for `kustomize`, modeled on `imranismail/setup-kustomize` while following the Tinx provider/runtime/workspace split.
+kiox provider for `kustomize`, modeled on `imranismail/setup-kustomize` while packaging the upstream `kubernetes-sigs/kustomize` release artifacts in the current kiox provider package, runtime, and workspace model.
 
 ## Behavior mapping
 
 - Input: version pinning is accepted through `KUSTOMIZE_VERSION` or `INPUT_VERSION`.
-- Output equivalent: the installer prints `binary_path`, and the workspace runtime resolves `kustomize` on `PATH` after materialization.
-- PATH mutation: handled by Tinx workspace shims and the local tool runtime, not by the provider binary itself.
+- Output equivalent: the installer prints `binary_path`, and kiox resolves `kustomize` on `PATH` after lazy materialization.
+- PATH mutation: handled by kiox workspace shims and the local tool runtime, not by the provider binary itself.
 - Download strategy: resolves `latest` through the GitHub releases API, downloads the platform archive from the upstream GitHub release, and validates the official SHA256 published in `checksums.txt`.
+- Platform coverage: `linux`, `darwin`, and `windows` with `amd64` and `arm64`.
+# setup-kustomize
+
+kiox provider for `kustomize`, modeled on `kubernetes-sigs/kustomize` release artifacts while following the current kiox provider package, runtime, and workspace model.
+
+## Behavior mapping
+
+- Input: version pinning is accepted through `KUSTOMIZE_VERSION` or `INPUT_VERSION`.
+- Output equivalent: the installer prints `binary_path`, and kiox resolves `kustomize` on `PATH` after lazy materialization.
+- PATH mutation: handled by kiox workspace shims and the local tool runtime, not by the provider binary itself.
+- Download strategy: resolves `latest` through the GitHub releases API, downloads the official archive from the release download path, and validates the published checksum from the same release.
 - Platform coverage: `linux`, `darwin`, and `windows` with `amd64` and `arm64`.
 
 ## Design
 
 - Bundled installer tool: `setup-kustomize`
 - User-facing tool: `kustomize`
-- Workspace install path: `.workspace/tools/.../bin/kustomize` via Tinx local runtime
-- Global cache: `~/.tinx/cache/providers/setup-kustomize`
+- Managed install path: `$KIOX_HOME/store/<storeID>/tools/kustomize/bin/kustomize` via the kiox local runtime
+- Global cache: `~/.kiox/cache/providers/setup-kustomize`
 - Version resolution:
-  - `latest` or `stable` resolves through the latest GitHub release tag
+  - `latest` or `stable` resolves through the latest release API
   - `5.8.1` or `v5.8.1` installs that exact version
 
 ## Build And Package
 
 ```bash
 go test ./...
-tinx release \
+kiox release \
   --manifest provider.yaml \
-  --main ./cmd/tinx-provider-kustomize \
+  --main ./cmd/kiox-provider-kustomize \
   --dist dist \
   --output oci \
-  --tag v0.1.0
+  --tag v0.2.0
 ```
 
 ## Example workspace flow
 
 ```bash
-cat > demo/tinx.yaml <<'EOF'
-apiVersion: tinx.io/v1
+mkdir -p demo
+cat > demo/kiox.yaml <<'EOF'
+apiVersion: kiox.io/v1
 kind: Workspace
-workspace: demo
+metadata:
+  name: demo
 providers:
   kustomize:
-    source: ghcr.io/sourceplane/tinx-setup-kustomize:v0.1.0
+    source: ghcr.io/sourceplane/setup-kustomize:v0.2.0
 EOF
 
-tinx init demo/tinx.yaml
-KUSTOMIZE_VERSION=v5.8.1 tinx -w demo exec -- kustomize version
+kiox init demo
+kiox --workspace demo ls
+kiox --workspace demo status
+KUSTOMIZE_VERSION=v5.8.1 kiox --workspace demo -- kustomize version
 ```
 
 ## Local validation
 
 ```bash
 workspace_dir=$(mktemp -d)
-cat > "$workspace_dir/tinx.yaml" <<EOF
-apiVersion: tinx.io/v1
+cat > "$workspace_dir/kiox.yaml" <<EOF
+apiVersion: kiox.io/v1
 kind: Workspace
-workspace: setup-kustomize-test
+metadata:
+  name: setup-kustomize-test
 providers:
   kustomize:
     source: $(pwd)/oci
 EOF
 
-tinx init "$workspace_dir/tinx.yaml"
-KUSTOMIZE_VERSION=v5.8.1 tinx -w "$workspace_dir" exec -- kustomize version
+kiox init "$workspace_dir"
+kiox --workspace "$workspace_dir" ls
+kiox --workspace "$workspace_dir" status
+KUSTOMIZE_VERSION=v5.8.1 kiox --workspace "$workspace_dir" -- kustomize version
 ```
 
 ## Publishing
 
 ```bash
 cd providers/setup-kustomize
-tinx release \
+kiox release \
   --manifest provider.yaml \
-  --main ./cmd/tinx-provider-kustomize \
+  --main ./cmd/kiox-provider-kustomize \
   --dist dist \
   --output oci \
-  --tag v0.1.0 \
-  --push ghcr.io/<org>/tinx-setup-kustomize:v0.1.0
+  --tag v0.2.0 \
+  --push ghcr.io/<org>/setup-kustomize:v0.2.0
 ```

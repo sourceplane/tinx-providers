@@ -1,0 +1,7 @@
+apiVersion: kiox.io/v1
+kind: Workspace
+metadata:
+  name: setup-azure-cli-local
+providers:
+  az:
+    source: ../oci

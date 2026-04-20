@@ -1,10 +1,10 @@
-apiVersion: tinx.io/v1
+apiVersion: kiox.io/v1
 kind: Provider
 metadata:
   namespace: sourceplane
-  name: tinx-setup-gcloud
-  version: v0.1.0
-  description: Lazily installs the Google Cloud CLI into the active Tinx workspace using a bundled Go runtime.
+  name: setup-gcloud
+  version: v0.2.0
+  description: Lazily installs the Google Cloud CLI into kiox workspaces using a bundled Go installer.
 spec:
   bundles:
     - name: setup-gcloud
@@ -12,33 +12,33 @@ spec:
         - platform:
             os: darwin
             arch: amd64
-          mediaType: application/vnd.tinx.tool.binary
-          source: dist/bin/darwin/amd64/tinx-provider-gcloud
+          mediaType: application/vnd.kiox.tool.binary
+          source: dist/bin/darwin/amd64/kiox-provider-gcloud
         - platform:
             os: darwin
             arch: arm64
-          mediaType: application/vnd.tinx.tool.binary
-          source: dist/bin/darwin/arm64/tinx-provider-gcloud
+          mediaType: application/vnd.kiox.tool.binary
+          source: dist/bin/darwin/arm64/kiox-provider-gcloud
         - platform:
             os: linux
             arch: amd64
-          mediaType: application/vnd.tinx.tool.binary
-          source: dist/bin/linux/amd64/tinx-provider-gcloud
+          mediaType: application/vnd.kiox.tool.binary
+          source: dist/bin/linux/amd64/kiox-provider-gcloud
         - platform:
             os: linux
             arch: arm64
-          mediaType: application/vnd.tinx.tool.binary
-          source: dist/bin/linux/arm64/tinx-provider-gcloud
+          mediaType: application/vnd.kiox.tool.binary
+          source: dist/bin/linux/arm64/kiox-provider-gcloud
         - platform:
             os: windows
             arch: amd64
-          mediaType: application/vnd.tinx.tool.binary
-          source: dist/bin/windows/amd64/tinx-provider-gcloud.exe
+          mediaType: application/vnd.kiox.tool.binary
+          source: dist/bin/windows/amd64/kiox-provider-gcloud.exe
         - platform:
             os: windows
             arch: arm64
-          mediaType: application/vnd.tinx.tool.binary
-          source: dist/bin/windows/arm64/tinx-provider-gcloud.exe
+          mediaType: application/vnd.kiox.tool.binary
+          source: dist/bin/windows/arm64/kiox-provider-gcloud.exe
   environments:
     - name: gcloud-env
       variables:
