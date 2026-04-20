@@ -1,0 +1,7 @@
+apiVersion: kiox.io/v1
+kind: Workspace
+metadata:
+  name: demo
+providers:
+  kustomize:
+    source: ghcr.io/sourceplane/setup-kustomize:v0.2.0

@@ -1,10 +1,10 @@
-apiVersion: tinx.io/v1
+apiVersion: kiox.io/v1
 kind: Provider
 metadata:
   namespace: sourceplane
-  name: tinx-setup-helm
-  version: v0.1.0
-  description: Lazily installs Helm into the active Tinx workspace using a bundled Go runtime.
+  name: setup-helm
+  version: v0.2.0
+  description: Lazily installs Helm into kiox workspaces using a bundled Go installer.
 spec:
   bundles:
     - name: setup-helm
@@ -12,38 +12,38 @@ spec:
         - platform:
             os: darwin
             arch: amd64
-          mediaType: application/vnd.tinx.tool.binary
-          source: dist/bin/darwin/amd64/tinx-provider-helm
+          mediaType: application/vnd.kiox.tool.binary
+          source: dist/bin/darwin/amd64/kiox-provider-helm
         - platform:
             os: darwin
             arch: arm64
-          mediaType: application/vnd.tinx.tool.binary
-          source: dist/bin/darwin/arm64/tinx-provider-helm
+          mediaType: application/vnd.kiox.tool.binary
+          source: dist/bin/darwin/arm64/kiox-provider-helm
         - platform:
             os: linux
             arch: amd64
-          mediaType: application/vnd.tinx.tool.binary
-          source: dist/bin/linux/amd64/tinx-provider-helm
+          mediaType: application/vnd.kiox.tool.binary
+          source: dist/bin/linux/amd64/kiox-provider-helm
         - platform:
             os: linux
             arch: arm64
-          mediaType: application/vnd.tinx.tool.binary
-          source: dist/bin/linux/arm64/tinx-provider-helm
+          mediaType: application/vnd.kiox.tool.binary
+          source: dist/bin/linux/arm64/kiox-provider-helm
         - platform:
             os: linux
             arch: arm
-          mediaType: application/vnd.tinx.tool.binary
-          source: dist/bin/linux/arm/tinx-provider-helm
+          mediaType: application/vnd.kiox.tool.binary
+          source: dist/bin/linux/arm/kiox-provider-helm
         - platform:
             os: windows
             arch: amd64
-          mediaType: application/vnd.tinx.tool.binary
-          source: dist/bin/windows/amd64/tinx-provider-helm.exe
+          mediaType: application/vnd.kiox.tool.binary
+          source: dist/bin/windows/amd64/kiox-provider-helm.exe
         - platform:
             os: windows
             arch: arm64
-          mediaType: application/vnd.tinx.tool.binary
-          source: dist/bin/windows/arm64/tinx-provider-helm.exe
+          mediaType: application/vnd.kiox.tool.binary
+          source: dist/bin/windows/arm64/kiox-provider-helm.exe
   environments:
     - name: helm-env
       variables:

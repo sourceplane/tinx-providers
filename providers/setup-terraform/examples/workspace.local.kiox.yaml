@@ -1,0 +1,7 @@
+apiVersion: kiox.io/v1
+kind: Workspace
+metadata:
+  name: setup-terraform-local
+providers:
+  terraform:
+    source: ../oci

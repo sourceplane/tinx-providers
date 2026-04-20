@@ -10,7 +10,7 @@ on:
       tag:
         description: Semantic version tag to package
         required: true
-        default: v0.1.0
+        default: v0.2.0
   push:
     tags:
       - providers/*/v*
@@ -29,6 +29,13 @@ jobs:
         with:
           go-version-file: go.work
 
+      - name: Install kiox
+        run: |
+          mkdir -p "$HOME/.local/bin"
+          GOBIN="$HOME/.local/bin" go install github.com/sourceplane/kiox/cmd/kiox@latest
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          "$HOME/.local/bin/kiox" version
+
       - id: meta
         name: Resolve release metadata
         run: |
@@ -42,8 +49,8 @@ jobs:
 
           provider_slug="${provider_dir#providers/}"
           tool_name="${provider_slug#setup-}"
-          provider_name="tinx-${provider_slug}"
-          main="./cmd/tinx-provider-${tool_name}"
+          provider_name="${provider_slug}"
+          main="./cmd/kiox-provider-${tool_name}"
           owner=$(printf '%s' "$GITHUB_REPOSITORY_OWNER" | tr '[:upper:]' '[:lower:]')
           push_ref="ghcr.io/${owner}/${provider_name}:${tag}"
 
@@ -61,12 +68,12 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Release provider
-        uses: sourceplane/tinx-release-action@v2
-        with:
-          working-directory: ${{ steps.meta.outputs.provider_dir }}
-          manifest: provider.yaml
-          main: ${{ steps.meta.outputs.main }}
-          output: oci
-          dist: dist
-          tag: ${{ steps.meta.outputs.tag }}
-          push: ${{ steps.meta.outputs.push_ref }}
+        working-directory: ${{ steps.meta.outputs.provider_dir }}
+        run: |
+          kiox release \
+            --manifest provider.yaml \
+            --main "${{ steps.meta.outputs.main }}" \
+            --output oci \
+            --dist dist \
+            --tag "${{ steps.meta.outputs.tag }}" \
+            --push "${{ steps.meta.outputs.push_ref }}"

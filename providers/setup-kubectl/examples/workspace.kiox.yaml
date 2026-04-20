@@ -1,0 +1,7 @@
+apiVersion: kiox.io/v1
+kind: Workspace
+metadata:
+  name: demo
+providers:
+  kubectl:
+    source: ghcr.io/sourceplane/setup-kubectl:v0.2.0

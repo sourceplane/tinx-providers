@@ -1,6 +1,0 @@
-apiVersion: tinx.io/v1
-kind: Workspace
-workspace: setup-helm-local
-providers:
-  helm:
-    source: ../oci

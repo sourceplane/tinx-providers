@@ -9,6 +9,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -18,7 +19,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/sourceplane/tinx-providers/internal/installutil"
+	"github.com/sourceplane/kiox-providers/internal/installutil"
 )
 
 func TestResolveReleaseAsset(t *testing.T) {
@@ -117,6 +118,66 @@ func TestInstallUsesCachedArchive(t *testing.T) {
 	}
 	if ok, err := installutil.FileMatchesChecksum(secondResult.BinaryPath, secondResult.SHA256); err != nil || !ok {
 		t.Fatalf("installed launcher checksum mismatch, ok=%t err=%v", ok, err)
+	}
+}
+
+func TestInstallFallsBackToReleasePageWhenTagAPIIsForbidden(t *testing.T) {
+	assetSuffix, archiveExt, launcherName, err := azureCLIPlatform(runtime.GOOS, runtime.GOARCH)
+	if err != nil {
+		t.Skipf("unsupported runtime for test: %v", err)
+	}
+
+	version := "2.85.0"
+	assetName := archiveFileName(version, assetSuffix, archiveExt)
+	archive := mustAzureCLIArchive(t, runtime.GOOS)
+	archiveDigest := sha256.Sum256(archive)
+	archiveSHA256 := hex.EncodeToString(archiveDigest[:])
+
+	var requests atomic.Int64
+	serverURL := ""
+	server := httptest.NewTLSServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		requests.Add(1)
+		switch request.URL.Path {
+		case "/releases/tags/azure-cli-" + version:
+			http.Error(writer, "forbidden", http.StatusForbidden)
+		case "/releases/tag/azure-cli-" + version:
+			_, _ = fmt.Fprintf(writer, "<html><body><pre>%s  %s</pre></body></html>", archiveSHA256, assetName)
+		case "/releases/download/azure-cli-" + version + "/" + assetName:
+			_, _ = writer.Write(archive)
+		default:
+			http.NotFound(writer, request)
+		}
+	}))
+	serverURL = server.URL
+	defer server.Close()
+
+	cacheDir := t.TempDir()
+	installDir := t.TempDir()
+	installer := NewInstaller()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	result, err := installer.Install(ctx, Config{
+		RequestedVersion: version,
+		InstallDir:       installDir,
+		CacheDir:         cacheDir,
+		ReleaseAPIURLs:   []string{serverURL + "/releases"},
+		HTTPClient:       server.Client(),
+	})
+	if err != nil {
+		t.Fatalf("Install() error = %v", err)
+	}
+	if result.ResolvedVersion != version {
+		t.Fatalf("resolved version = %q, want %q", result.ResolvedVersion, version)
+	}
+	if result.SourceURL != serverURL+"/releases/download/azure-cli-"+version+"/"+assetName {
+		t.Fatalf("source URL = %q", result.SourceURL)
+	}
+	if _, err := os.Stat(filepath.Join(installDir, "bin", launcherName)); err != nil {
+		t.Fatalf("expected Azure CLI launcher: %v", err)
+	}
+	if requests.Load() != 3 {
+		t.Fatalf("network requests = %d, want 3", requests.Load())
 	}
 }
 

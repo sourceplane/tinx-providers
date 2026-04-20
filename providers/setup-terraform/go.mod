@@ -1,5 +1,5 @@
-module github.com/sourceplane/tinx-providers/providers/setup-terraform
+module github.com/sourceplane/kiox-providers/providers/setup-terraform
 
 go 1.23.0
 
-require github.com/sourceplane/tinx-providers v0.0.0
+require github.com/sourceplane/kiox-providers v0.0.0

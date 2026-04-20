@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/sourceplane/tinx-providers/providers/setup-kubectl/internal/provider"
+	"github.com/sourceplane/kiox-providers/providers/setup-helm/internal/provider"
 )
 
 func main() {
@@ -18,22 +18,20 @@ func main() {
 	var mirrors mirrorFlag
 
 	fs := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
-	fs.StringVar(&config.RequestedVersion, "version", firstNonEmpty(os.Getenv("INPUT_VERSION"), os.Getenv("KUBECTL_VERSION")), "kubectl version to install")
-	fs.StringVar(&config.InstallDir, "install-dir", os.Getenv("TINX_TARGET_TOOL_INSTALL_DIR"), "override the target installation directory")
-	fs.StringVar(&config.TargetBin, "bin", os.Getenv("TINX_TARGET_TOOL_BIN"), "override the target binary path")
-	fs.StringVar(&config.CacheDir, "cache-dir", os.Getenv("KUBECTL_CACHE_DIR"), "override the provider cache directory")
-	fs.StringVar(&config.TinxHome, "tinx-home", os.Getenv("TINX_HOME"), "override the tinx home used to derive the cache")
-	fs.StringVar(&config.ToolName, "tool-name", firstNonEmpty(os.Getenv("TINX_TARGET_TOOL_NAME"), "kubectl"), "tool name to materialize")
-	fs.BoolVar(&config.Debug, "debug", truthy(os.Getenv("TINX_PROVIDER_DEBUG")), "enable debug logging")
-	fs.StringVar(&outputFormat, "output", firstNonEmpty(os.Getenv("TINX_PROVIDER_OUTPUT"), "text"), "output format: text or json")
-	fs.Var(&mirrors, "mirror", "additional HTTPS release base URL")
+	fs.StringVar(&config.RequestedVersion, "version", firstNonEmpty(os.Getenv("INPUT_VERSION"), os.Getenv("HELM_VERSION")), "helm version to install")
+	fs.StringVar(&config.InstallDir, "install-dir", firstNonEmpty(os.Getenv("KIOX_TARGET_TOOL_INSTALL_DIR"), os.Getenv("TINX_TARGET_TOOL_INSTALL_DIR")), "override the target installation directory")
+	fs.StringVar(&config.TargetBin, "bin", firstNonEmpty(os.Getenv("KIOX_TARGET_TOOL_BIN"), os.Getenv("TINX_TARGET_TOOL_BIN")), "override the target binary path")
+	fs.StringVar(&config.CacheDir, "cache-dir", os.Getenv("HELM_CACHE_DIR"), "override the provider cache directory")
+	fs.StringVar(&config.KioxHome, "kiox-home", firstNonEmpty(os.Getenv("KIOX_HOME"), os.Getenv("TINX_HOME")), "override the kiox home used to derive the cache")
+	fs.StringVar(&config.ToolName, "tool-name", firstNonEmpty(os.Getenv("KIOX_TARGET_TOOL_NAME"), os.Getenv("TINX_TARGET_TOOL_NAME"), "helm"), "tool name to materialize")
+	fs.StringVar(&outputFormat, "output", firstNonEmpty(os.Getenv("KIOX_PROVIDER_OUTPUT"), os.Getenv("TINX_PROVIDER_OUTPUT"), "text"), "output format: text or json")
+	fs.Var(&mirrors, "mirror", "additional HTTPS Helm download base URL")
 	_ = fs.Parse(os.Args[1:])
 
-	config.LogOutput = os.Stderr
 	if len(mirrors) > 0 {
 		config.Mirrors = append(config.Mirrors[:0], mirrors...)
 	} else {
-		config.Mirrors = provider.MirrorsFromEnv(os.Getenv("KUBECTL_RELEASE_BASE_URLS"))
+		config.Mirrors = provider.MirrorsFromEnv(os.Getenv("HELM_DOWNLOAD_BASE_URLS"))
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
@@ -85,13 +83,4 @@ func firstNonEmpty(values ...string) string {
 		}
 	}
 	return ""
-}
-
-func truthy(value string) bool {
-	switch strings.ToLower(strings.TrimSpace(value)) {
-	case "1", "true", "yes", "on":
-		return true
-	default:
-		return false
-	}
 }

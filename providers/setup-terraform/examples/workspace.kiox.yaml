@@ -1,0 +1,7 @@
+apiVersion: kiox.io/v1
+kind: Workspace
+metadata:
+  name: demo
+providers:
+  terraform:
+    source: ghcr.io/sourceplane/setup-terraform:v0.2.0
